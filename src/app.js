@@ -23,11 +23,10 @@ import { addLogger } from './utils/logger.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 import dotenv from 'dotenv';
-const port = process.env.PORT;
 
 const app = express();
 const MongoStore = sessionFileStore(session);
-const PORT = port || process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080;
 
 app.use(session({   
     secret: 'secret-key1234',
