@@ -5,7 +5,7 @@ import privateRoutesMiddleware from '../middleware/privateRoutesMiddleware.js';
 import generateToken from '../utils/tokenGenerator.js'
 import transporter from '../utils/nodemailer.js';
 import dotenv from 'dotenv';
-import  UserController  from '../controllers/user.controller.mdb.js'
+import UserController from '../controllers/user.controller.mdb.js'
 import { validateToken } from '../utils/tokenValidator.js';
 import bcrypt from 'bcrypt';
 
@@ -62,7 +62,7 @@ router.get('/password/:token', async (req, res) => {
         if (!user) {
             throw new Error('Usuario no encontrado');
         }
-        res.cookie('userEmail', userEmail, { maxAge: 900000, httpOnly: true }); 
+        res.cookie('userEmail', userEmail, { maxAge: 900000, httpOnly: true });
         res.redirect(`/password`);
     } catch (error) {
         console.error('Error al procesar el token:', error);
@@ -80,7 +80,7 @@ router.post('/password', async (req, res) => {
             throw new Error('Usuario no encontrado');
         }
 
-        const currentPassword = user.password; 
+        const currentPassword = user.password;
 
         const resetToken = req.body.token;
         const newPassword = req.body.newPassword;
@@ -94,14 +94,13 @@ router.post('/password', async (req, res) => {
             return res.status(400).send('La nueva contraseña no puede ser igual a la contraseña actual.');
         }
 
-
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
         user.password = hashedPassword;
         await user.save();
 
-        return res.send('Contraseña restablecida con éxito. Ahora puedes iniciar sesión con tu nueva contraseña.');
+        return res.status(200).send('Contraseña restablecida con éxito. Ahora puedes iniciar sesión con tu nueva contraseña.');
     } catch (error) {
         console.error('Error al restablecer la contraseña:', error);
         return res.status(500).send('Hubo un error al restablecer la contraseña. Por favor, inténtalo de nuevo más tarde.');
