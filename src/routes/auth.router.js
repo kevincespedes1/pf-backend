@@ -117,7 +117,7 @@ router.post('/reset-password', async (req, res) => {
 
 
     const resetToken = generateToken(userEmail);
-    const resetLink = `http://localhost:8080/password/${resetToken}`;
+    const resetLink = `https://pf-backend-z3o3.onrender.com/password/${resetToken}`;
     const mailOptions = {
         from: emailUser,
         to: userEmail,
