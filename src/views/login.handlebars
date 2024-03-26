@@ -21,8 +21,15 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 40px;
-            width: 400px;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
+        }
+
+        @media screen and (min-width: 768px) {
+            .login-container {
+                width: 400px;
+            }
         }
 
         h1 {
@@ -33,15 +40,14 @@
 
         input[type="email"],
         input[type="password"],
-        input[type="submit"],
-        button {
+        input[type="submit"] {
             width: 100%;
             padding: 14px;
             margin-top: 20px;
-            border: none;
+            border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
-            transition: background-color 0.3s ease;
+            transition: border-color 0.3s ease;
             box-sizing: border-box;
         }
 
@@ -60,6 +66,11 @@
 
         input[type="submit"],
         button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
             background-color: #007bff;
             color: #fff;
             cursor: pointer;

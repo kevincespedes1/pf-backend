@@ -71,7 +71,7 @@ const roles = document.getElementById('roles');
 addProduct.addEventListener('click', (e) => {
   e.preventDefault();
   const userEmail = email.value
-  const userRole = role.value; 
+  const userRole = role.value;
   if (userRole !== 'premium' && userRole !== 'admin') {
     Swal.fire({
       icon: 'error',
@@ -112,7 +112,7 @@ addProduct.addEventListener('click', (e) => {
     stock: stock,
     category: category,
     thumbnail: thumbnail || 'Sin imagen',
-    owner: userEmail 
+    owner: userEmail
   };
   socket.emit('addProduct', newProduct);
   Swal.fire({
@@ -123,6 +123,10 @@ addProduct.addEventListener('click', (e) => {
     showConfirmButton: false,
     timer: 1500,
     timerProgressBar: true,
+  }).then(() => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   });
   formAddProduct.reset();
 });
@@ -130,17 +134,17 @@ addProduct.addEventListener('click', (e) => {
 
 deleteProduct.addEventListener('click', async (e) => {
   e.preventDefault();
-const userRoles =document.getElementById('roles')
-const usRol = userRoles.value 
-  const userEmail = email.value; 
+  const userRoles = document.getElementById('roles')
+  const usRol = userRoles.value
+  const userEmail = email.value;
   const productId = document.getElementById('id').value;
   try {
     const response = await fetch(`/api/products/${productId}`);
     const data = await response.json();
 
-    const productOwnerEmail = data.owner; 
+    const productOwnerEmail = data.owner;
 
-    if (userEmail === productOwnerEmail || usRol.includes('admin') ) {
+    if (userEmail === productOwnerEmail || usRol.includes('admin')) {
       Swal.fire({
         title: '¿Estás seguro?',
         text: '¿Quieres eliminar este producto?',
@@ -165,6 +169,10 @@ const usRol = userRoles.value
               showConfirmButton: false,
               timer: 2000,
               timerProgressBar: true
+            }).then(() => {
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
             });
           } else {
             Swal.fire({
@@ -203,5 +211,3 @@ const usRol = userRoles.value
     });
   }
 });
-
-

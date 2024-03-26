@@ -8,10 +8,115 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            font - family: 'Segoe UI', Tahoma, Geneva, Verdana, sans - serif;
+            background - color: #f9f9f9;
             margin: 0;
             padding: 20px;
+            font - size: 16px;
+        }
+
+        .navbar-item {
+            padding - bottom: 5px;
+        }
+
+        .menu-toggle {
+            display: block;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z - index: 2;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 100 %;
+            height: 2px;
+            background - color: #fff;
+            position: absolute;
+            left: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-toggle span:nth-child(1) {
+            top: 0;
+        }
+
+        .menu-toggle span:nth-child(2) {
+            top: 50 %;
+            transform: translateY(-50 %);
+        }
+
+        .menu-toggle span:nth-child(3) {
+            bottom: 0;
+        }
+
+        .navbar-menu.mobile {
+            display: block;
+            position: absolute;
+            top: 12%;
+            left: 67%;
+            width: 200px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: end;
+        }
+
+
+        @media screen and (min-width: 320px) {
+            .navbar-menu {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .button-add {
+                width: 40px;
+                height: 40px;
+            }
+
+            .button-del {
+                width: 40px;
+                height: 40px;
+            }
+
+            .navbar-menu.mobile {
+                width: 25%;
+                left: 59%;
+                top: 10%;
+            }
+        }
+
+        @media screen and (min-width: 375px) {
+            .navbar-menu.mobile {
+                left: 61%;
+            }
+        }
+
+        @media screen and (min-width: 425px) {
+            .navbar-menu.mobile {
+                left: 63%;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .navbar-menu.mobile {
+                left: 68%;
+                top: 10%;
+            }
+
+            .menu-toggle span {
+                display: none;
+            }
+
+            .navbar-menu {
+                display: flex;
+            }
         }
 
 
@@ -90,13 +195,11 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-            /* Hacer el texto más negrita */
         }
 
         p {
             margin: 10px 0;
             font-weight: bold;
-            /* Hacer el texto más negrita */
         }
     </style>
 </head>
@@ -105,18 +208,24 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="/" class="navbar-logo">Mi Tienda Online</a>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span>&#9776;</span>
+            </div>
             <ul class="navbar-menu">
                 <li class="navbar-item">
                     <a href="/" class="navbar-link">Inicio</a>
                 </li>
                 <li class="navbar-item">
-                    <a href="/realtimeproducts" class="navbar-link">Productos en tiempo real</a>
+                    <a href="/realtimeproducts" class="navbar-link">Productos</a>
                 </li>
                 <li class="navbar-item">
                     <a href="/profile" class="navbar-link">Mi Perfil</a>
                 </li>
                 <li class="navbar-item">
                     <a href="/cart" class="navbar-link">Carrito</a>
+                </li>
+                <li class="navbar-item">
+                    <a href="/shopping" class="navbar-link">Tickets</a>
                 </li>
             </ul>
         </div>
@@ -149,104 +258,12 @@
             </div>
             <button type="submit" id="submitBtn">Subir</button>
         </form>
-        <button onclick="toggleUserRole('{{userId}}')">Cambiar a Premium</button>
+        <button onclick="toggleUserRole('{{userId}}')">Cambiar de rol a Premium</button>
     </div>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.getElementById('uploadForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
+    <script src="/js/toggle.js"></script>
+    <script src="/js/documents.js"></script>
 
-            const formData = new FormData(this);
-
-            document.getElementById('identificationIcon').innerHTML = '&#8987;';
-            document.getElementById('proofOfAddressIcon').innerHTML = '&#8987;';
-            document.getElementById('bankStatementIcon').innerHTML = '&#8987;';
-
-            try {
-                const response = await fetch(`/api/users/{{userId}}/documents`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Hubo un problema al subir los archivos.');
-                }
-
-                const data = await response.json();
-
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: data.message,
-                    confirmButtonText: 'Aceptar'
-                });
-
-                if (document.getElementById('identification').files.length > 0) {
-                    document.getElementById('identificationIcon').innerHTML = '&#10003;';
-                } else {
-                    document.getElementById('identificationIcon').innerHTML = '&#10006;';
-                }
-
-                if (document.getElementById('proof_of_address').files.length > 0) {
-                    document.getElementById('proofOfAddressIcon').innerHTML = '&#10003;';
-                } else {
-                    document.getElementById('proofOfAddressIcon').innerHTML = '&#10006;';
-                }
-
-                if (document.getElementById('bank_statement').files.length > 0) {
-                    document.getElementById('bankStatementIcon').innerHTML = '&#10003;';
-                } else {
-                    document.getElementById('bankStatementIcon').innerHTML = '&#10006;';
-                }
-
-            } catch (error) {
-                console.error('Error al subir documentos:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Hubo un error al subir los documentos. Por favor, inténtalo de nuevo más tarde.',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-        });
-        function toggleUserRole(userId) {
-            fetch(`/api/users/premium/${userId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => {
-                    if (response.status === 400) {
-                        return response.json().then(data => {
-                            throw new Error(data.message);
-                        });
-                    }
-                    if (!response.ok) {
-                        throw new Error('No se pudo cambiar el rol del usuario');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: data.message,
-                        confirmButtonText: 'Aceptar'
-                    });
-                })
-                .catch(error => {
-                    console.error('Error al cambiar el rol del usuario:', error.message);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: error.message,
-                        confirmButtonText: 'Aceptar'
-                    });
-                });
-        }
-
-    </script>
 </body>
 
 </html>

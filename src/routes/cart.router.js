@@ -1,8 +1,8 @@
 import express from 'express';
-import  UserController  from '../controllers/user.controller.mdb.js';
+import UserController from '../controllers/user.controller.mdb.js';
 import userModel from '../dao/models/user.model.js';
 import checkPermissions from '../middleware/adminAndUser.js';
-import  productModel  from '../dao/models/products.model.js';
+import productModel from '../dao/models/products.model.js';
 import Ticket from '../dao/models/ticket.model.js'
 import errorMessages from '../errors/errors.js';
 
@@ -10,7 +10,7 @@ const userController = new UserController()
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    
+
     try {
         const userId = req.session.user._id;
         const cartData = await userController.getProductToCart(userId);
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 
 
 
-router.post('/:cid/purchase',checkPermissions('purchase'), async (req, res) => {
+router.post('/:cid/purchase', checkPermissions('purchase'), async (req, res) => {
     try {
         const { cid } = req.params;
         req.logger.info(`Iniciando compra para el usuario con ID: ${cid}`);
@@ -36,19 +36,25 @@ router.post('/:cid/purchase',checkPermissions('purchase'), async (req, res) => {
         }
 
         const cart = user.cart;
-
         const productsNotProcessed = [];
-
+        const ticketProducts = []
         let totalAmount = 0;
 
         for (const item of cart) {
             const product = await productModel.findById(item.productId);
+
 
             if (product && product.price) {
                 const quantityInCart = item.quantity;
                 const productPrice = product.price;
                 const availableStock = product.stock;
 
+                ticketProducts.push({
+                    productId: product._id,
+                    title: product.title,
+                    quantity: quantityInCart,
+                    price: productPrice
+                });
                 if (availableStock >= quantityInCart) {
                     product.stock -= quantityInCart;
                     await product.save();
@@ -65,29 +71,28 @@ router.post('/:cid/purchase',checkPermissions('purchase'), async (req, res) => {
 
         const newTicket = new Ticket({
             amount: totalAmount,
-            purchaser: user._id
+            purchaser: user._id,
+            products: ticketProducts
         });
 
         await newTicket.save();
         req.logger.info(`Compra finalizada correctamente para el usuario con ID: ${cid}`);
-
-        res.status(200).json({ success: true, totalAmount, productsNotProcessed, message: 'Compra finalizada correctamente' });
+        res.render('finish', { ticket: newTicket, tickerPur: newTicket.purchaser, ticketAmount: newTicket.amount, ticketCode: newTicket.code, ticketTime: newTicket.purchase_datetime});
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ success: false, message: errorMessages.ERROR_FINALIZING_PURCHASE });
     }
 });
 
+// res.status(200).json({ success: true, totalAmount, productsNotProcessed, message: 'Compra finalizada correctamente' });
 
 
 router.delete('/:userId/products/:productId', checkPermissions('removeFromCart'), async (req, res) => {
     try {
         const { userId, productId } = req.params;
-        console.log(userId,productId,'enviando usuario y productId');
 
         const user = await userModel.findById(userId);
-        console.log(user, 'buscando usuario');
-        
+
         if (!user) {
             req.logger.warn(`Usuario no encontrado con ID: ${userId}`);
             return res.status(404).json({ success: false, message: errorMessages.USER_NOT_FOUND });

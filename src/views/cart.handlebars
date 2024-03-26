@@ -7,19 +7,126 @@
     <title>Carrito de Compras</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f9f9f9;
+            font - family: 'Segoe UI', Tahoma, Geneva, Verdana, sans - serif;
+            background - color: #f9f9f9;
             margin: 0;
             padding: 20px;
+            font - size: 16px;
         }
 
+        .navbar-item {
+            padding - bottom: 5px;
+        }
+
+        .menu-toggle {
+            display: block;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z - index: 2;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 100 %;
+            height: 2px;
+            background - color: #fff;
+            position: absolute;
+            left: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-toggle span:nth-child(1) {
+            top: 0;
+        }
+
+        .menu-toggle span:nth-child(2) {
+            top: 50 %;
+            transform: translateY(-50 %);
+        }
+
+        .menu-toggle span:nth-child(3) {
+            bottom: 0;
+        }
+
+        .navbar-menu.mobile {
+            display: block;
+            position: absolute;
+            top: 12%;
+            left: 67%;
+            width: 200px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: end;
+        }
+
+
+        @media screen and (min-width: 320px) {
+            .navbar-menu {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .button-add {
+                width: 40px;
+                height: 40px;
+            }
+
+            .button-del {
+                width: 40px;
+                height: 40px;
+            }
+
+            .navbar-menu.mobile {
+                width: 25%;
+                left: 59%;
+                top: 10%;
+            }
+        }
+
+        @media screen and (min-width: 375px) {
+            .navbar-menu.mobile {
+                left: 61%;
+            }
+        }
+
+        @media screen and (min-width: 425px) {
+            .navbar-menu.mobile {
+                left: 63%;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .navbar-menu.mobile {
+                left: 68%;
+                top: 10%;
+            }
+
+            .menu-toggle span {
+                display: none;
+            }
+
+            .navbar-menu {
+                display: flex;
+            }
+        }
+
+
+
         .container {
-            max-width: 1500px;
+            max-width: 100%;
             margin: 0 auto;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            flex-direction: row;
+            gap: 20px;
         }
 
         .product {
@@ -27,7 +134,6 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            margin: 10px;
             width: 300px;
         }
 
@@ -89,6 +195,30 @@
 
         h1 {
             text-align: center;
+            margin-top: 20px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .product {
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 425px) {
+            .container {
+                padding: 0 10px;
+            }
+        }
+
+        .botones {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        #delete-all-button,
+        #finalize-purchase-button {
+            margin: 0 10px;
         }
     </style>
 </head>
@@ -97,18 +227,24 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="/" class="navbar-logo">Mi Tienda Online</a>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span>&#9776;</span>
+            </div>
             <ul class="navbar-menu">
                 <li class="navbar-item">
                     <a href="/" class="navbar-link">Inicio</a>
                 </li>
                 <li class="navbar-item">
-                    <a href="/realtimeproducts" class="navbar-link">Productos en tiempo real</a>
+                    <a href="/realtimeproducts" class="navbar-link">Productos</a>
                 </li>
                 <li class="navbar-item">
                     <a href="/profile" class="navbar-link">Mi Perfil</a>
                 </li>
                 <li class="navbar-item">
                     <a href="/cart" class="navbar-link">Carrito</a>
+                </li>
+                <li class="navbar-item">
+                    <a href="/shopping" class="navbar-link">Tickets</a>
                 </li>
             </ul>
         </div>
@@ -152,68 +288,9 @@
 
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
+<script src="/js/toggle.js"></script>
+<script src="/js/cart.js"></script>
 
-    //generar ticket
-    document.getElementById('finalize-purchase-button').addEventListener('click', function () {
-        const userId = event.target.dataset.userId;
-        window.location.href = `/cart/${userId}/purchase`;
-    });
-    //fin generar ticket
-
-    //eliminar 1 producto
-    document.querySelectorAll('.delete-button').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            try {
-                const productId = event.target.dataset.productId;
-                const userId = event.target.dataset.userId;
-
-                const response = await fetch(`/cart/{{userId}}/products/${productId}`, {
-                    method: 'DELETE',
-                });
-
-                if (response.ok) {
-                    Swal.fire('Producto Eliminado', 'El producto fue eliminado correctamente del carrito', 'success');
-                    location.reload();
-                } else {
-                    alert('Error al eliminar producto del carrito');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        });
-    });
-    //fin eliminar 1 producto
-
-    //eliminar todos los productos
-    document.getElementById('delete-all-button').addEventListener('click', async () => {
-        try {
-            const response = await fetch("/cart/{{userId}}", {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Éxito',
-                    text: 'Todos los productos han sido eliminados del carrito correctamente',
-                    confirmButtonText: 'Aceptar'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Error al eliminar todos los productos del carrito',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    });
-    //fin eliminar todos los productos
-
-</script>
 </body>
 
 </html>

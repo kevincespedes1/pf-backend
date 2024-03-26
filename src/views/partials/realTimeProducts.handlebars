@@ -1,15 +1,154 @@
-<div class="flex ">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <style>
+        body {
+            font - family: 'Segoe UI', Tahoma, Geneva, Verdana, sans - serif;
+            background - color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            font - size: 16px;
+        }
 
+        .navbar-item {
+            padding - bottom: 5px;
+        }
+
+        .menu-toggle {
+            display: block;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z - index: 2;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 100 %;
+            height: 2px;
+            background - color: #fff;
+            position: absolute;
+            left: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-toggle span:nth-child(1) {
+            top: 0;
+        }
+
+        .menu-toggle span:nth-child(2) {
+            top: 50 %;
+            transform: translateY(-50 %);
+        }
+
+        .menu-toggle span:nth-child(3) {
+            bottom: 0;
+        }
+
+        .navbar-menu.mobile {
+            display: block;
+            position: absolute;
+            top: 12%;
+            left: 67%;
+            width: 200px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: end;
+        }
+
+
+        @media screen and (min-width: 320px) {
+            .navbar-menu {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .button-add {
+                width: 40px;
+                height: 40px;
+            }
+
+            .button-del {
+                width: 40px;
+                height: 40px;
+            }
+
+            .navbar-menu.mobile {
+                width: 25%;
+                left: 59%;
+                top: 13%;
+            }
+        }
+
+        @media screen and (min-width: 375px) {
+            .navbar-menu.mobile {
+                left: 61%;
+            }
+        }
+
+        @media screen and (min-width: 425px) {
+            .navbar-menu.mobile {
+                left: 63%;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .navbar-menu.mobile {
+                left: 68%;
+                top: 13%;
+            }
+
+            .menu-toggle span {
+                display: none;
+            }
+
+            .navbar-menu {
+                display: flex;
+            }
+        }
+
+        .overlay {
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+
+        .spinner-container {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
     <nav class="navbar">
         <button id="report-button" class="report-button-icon report-button ">⚠️</button>
         <div class="navbar-container">
             <a href="/" class="navbar-logo">Mi Tienda Online</a>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span>&#9776;</span>
+            </div>
             <ul class="navbar-menu">
                 <li class="navbar-item">
                     <a href="/" class="navbar-link">Inicio</a>
                 </li>
                 <li class="navbar-item">
-                    <a href="/realtimeproducts" class="navbar-link">Productos en tiempo real</a>
+                    <a href="/realtimeproducts" class="navbar-link">Productos</a>
                 </li>
                 <li class="navbar-item">
                     <a href="/profile" class="navbar-link">Mi Perfil</a>
@@ -17,9 +156,13 @@
                 <li class="navbar-item">
                     <a href="/cart" class="navbar-link">Carrito</a>
                 </li>
+                <li class="navbar-item">
+                    <a href="/shopping" class="navbar-link">Tickets</a>
+                </li>
             </ul>
         </div>
     </nav>
+
 
     <div class="pagination-buttons">
         {{#if hasPrevPage}}
@@ -62,12 +205,18 @@
                     <button class="addToCartButton button-realtimeproducts add-to-cart-button"
                         data-product-id="{{this.id}}">Agregar al
                         carrito</button>
+
                 </div>
             </div>
             {{/each}}
         </div>
     </div>
-
+    <div id="loadingSpinner" class="overlay">
+        <div class="spinner-container">
+            <img src="https://i.gifer.com/origin/4d/4dc11d17f5292fd463a60aa2bbb41f6a_w200.gif" alt="Logo giratorio">
+            <p>Espere un momento...</p>
+        </div>
+    </div>
     <div class="toggle-button-add" id="toggle-button-add">
         <button class="button-add" id="add-but">&#9654;</button>
     </div>
@@ -154,84 +303,10 @@
         <button class="close-chat-button" id="close-chat-button">&#x2716;</button>
     </div>
 
-</div>
 
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-<script type="text/javascript" src="/js/index.js"></script>
-<script type="text/javascript" src="/js/realTimeProducts.js"></script>
-<script>
-
-    //chat
-    document.addEventListener('DOMContentLoaded', function () {
-        const chatTab = document.getElementById('chat-tab');
-        const chatContainer = document.getElementById('chat-container');
-        const chatTabButton = document.getElementById('chat-tab-button');
-        const closeChatButton = document.getElementById('close-chat-button');
-
-        chatTabButton.addEventListener('click', function () {
-            chatContainer.style.display = 'block';
-            chatTab.style.display = 'none';
-        });
-
-        closeChatButton.addEventListener('click', function () {
-            chatContainer.style.display = 'none';
-            chatTab.style.display = 'block';
-        });
-    });
-
-    // Mostrar modal al hacer clic en el botón de informe
-    document.getElementById('report-button').addEventListener('click', function () {
-        document.getElementById('report-modal').style.display = 'block';
-    });
-
-    // Cerrar modal al hacer clic en el botón de cierre
-    document.getElementById('close-report-modal').addEventListener('click', function () {
-        document.getElementById('report-modal').style.display = 'none';
-    });
-
-    // Cerrar modal al hacer clic fuera de él
-    window.addEventListener('click', function (event) {
-        var modal = document.getElementById('report-modal');
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    //herramientas------------------------------------------
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const deleteTab = document.getElementById('toggle-button-del');
-        const deleteContainer = document.getElementById('delete-container');
-        const deleteTabButton = document.getElementById('delete-but');
-        const closeDeleteButton = document.getElementById('close-delete-button');
-
-        deleteTabButton.addEventListener('click', function () {
-            deleteContainer.style.display = 'block';
-            deleteTab.style.display = 'none';
-        });
-
-        closeDeleteButton.addEventListener('click', function () {
-            deleteContainer.style.display = 'none';
-            deleteTab.style.display = 'block';
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const addTab = document.getElementById('toggle-button-addd');
-        const addContainer = document.getElementById('add-container');
-        const addTabButton = document.getElementById('add-but');
-        const closeAddButton = document.getElementById('close-add-button');
-
-        addTabButton.addEventListener('click', function () {
-            addContainer.style.display = 'block';
-            addTab.style.display = 'none';
-        });
-
-        closeAddButton.addEventListener('click', function () {
-            addContainer.style.display = 'none';
-            addTab.style.display = 'block';
-        });
-    });
-
-</script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/realTimeProducts.js"></script>
+    <script src="/js/toggle.js"></script>
+</body>

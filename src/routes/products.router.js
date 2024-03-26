@@ -6,6 +6,7 @@ import privateRoutesMiddleware from '../middleware/privateRoutesMiddleware.js';
 import checkPermissions from '../middleware/adminAndUser.js';
 import productModel from '../dao/models/products.model.js';
 import userModel from '../dao/models/user.model.js';
+import sendProduct from '../middleware/productEliminated.js';
 const productManager = new ProductManager();
 const productsRouter = express.Router();
 
@@ -99,13 +100,13 @@ productsRouter.delete('/:pid', checkPermissions('delete'), async (req, res) => {
         const userDataString = req.cookies.user;
         const decodedUserDataString = decodeURIComponent(userDataString);
         const userData = JSON.parse(decodedUserDataString);
-
         if (product.owner === userData.email || userData.rol === 'admin') {
             const deletedProduct = await productManager.deleteProduct(pid);
             await userModel.updateMany({}, { $pull: { cart: { productId: pid } } });
+            await sendProduct(product.owner);
 
             return res.status(200).json({ "Deleted product": deletedProduct });
-        } else {
+        } else {    
             return res.status(403).json({ message: "Access denied. You are not the owner of this product." });
         }
     } catch (err) {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -80,6 +81,7 @@
         <h1>Lista de productos:</h1>
     </div>
 
+    {{#if exactLimitProducts}}
     {{#each exactLimitProducts}}
     <div class="product">
         <ul>
@@ -93,45 +95,13 @@
         </ul>
     </div>
     {{/each}}
+    {{else}}
+    <p>Por favor diríjase a los productos en tiempo real</p>
+    {{/if}}
 
 </body>
 
 </html>
 
-
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    const realtimeProductsForm = document.getElementById('realtime-products-form');
-
-realtimeProductsForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    fetch('/api/sessions/current')
-        .then(response => response.json())
-        .then(data => {
-            if (data.user) {
-                window.location.href = '/realtimeproducts';
-            } else {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Acceso denegado',
-                    text: 'Debe iniciar sesión o registrarse para ver esta página',
-                    showCancelButton: true,
-                    confirmButtonText: 'Registrarme',
-                    cancelButtonText: 'Iniciar Sesión',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/register'; 
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        window.location.href = '/login'; 
-                    }
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error al verificar la autenticación del usuario:', error);
-        });
-});
-
-
-</script>
+<script src="/js/home.js"></script>

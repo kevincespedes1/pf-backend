@@ -36,7 +36,7 @@ export const registerUser = async (req, res) => {
 
         await newUser.save();
 
-        res.status(201).json({ message: 'Usuario registrado exitosamente' });
+        res.redirect('/login');
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -84,21 +84,19 @@ export const getCurrentUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
     try {
-        // Actualizar la última conexión al cerrar sesión
         if (req.session.user) {
             const user = await UserModel.findById(req.session.user._id);
             user.last_connection = new Date();
             await user.save();
         }
 
-        // Eliminar la sesión y redireccionar
         req.session.destroy((err) => {
             if (err) {
                 console.error('Error al destruir la sesión:', err);
                 return res.status(500).json({ message: 'Error al cerrar sesión' });
             }
             res.clearCookie('user');
-            res.redirect('/login'); // Redirecciona a donde quieras
+            res.redirect('/login');
         });
     } catch (error) {
         console.error('Error al cerrar sesión:', error);

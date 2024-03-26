@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Usuarios</title>
+    <title>My Shopping</title>
     <style>
         body {
             font - family: 'Segoe UI', Tahoma, Geneva, Verdana, sans - serif;
@@ -118,112 +118,76 @@
             }
         }
 
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: flex-start;
-            font-size: 1rem;
+        h1 {
+            color: #333;
         }
 
-        .user-card {
+        .ul {
+            padding: 0;
+        }
+
+        .li {
+            margin-bottom: 20px;
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            margin: 10px;
-            width: 300px;
-            flex: 1 1 300px;
-            font-size: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            list-style: none;
         }
 
-        .user-card h2 {
+        .li:hover {
+            transform: translateY(-5px);
+        }
+
+        p {
+            margin: 0;
             margin-bottom: 10px;
         }
 
-        .user-card p {
-            margin: 5px 0;
+        .title {
+            font-weight: bold;
+            color: #333;
         }
 
-        .user-card button {
-            background-color: #007bff;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
+        .toggle-button {
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-            width: 100%;
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            transition: background-color 0.3s;
         }
 
-        .user-card button:hover {
+        .toggle-button:hover {
             background-color: #0056b3;
         }
 
-        .title {
-            text-align: center;
-            width: 100%;
-        }
-
-        .pagination {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            padding: 0;
-            width: 100%;
-        }
-
-        .pagination li {
-            margin: 0 5px;
-        }
-
-        .pagination li a {
-            text-decoration: none;
-            padding: 5px 10px;
-            border: 1px solid #007bff;
-            border-radius: 5px;
-            color: #007bff;
-        }
-
-        .pagination li a:hover {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
+        .products {
             display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 1;
-            border-radius: 5px;
+            padding-left: 20px;
+            list-style-type: none;
         }
 
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
+        .products.visible {
             display: block;
         }
 
-        .dropdown-content a:hover {
-            background-color: #ddd;
+        .products li {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
         }
 
-        .dropdown:hover .dropdown-content {
-            display: block;
+        .products li:first-child {
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
         }
     </style>
+
+
 </head>
 
 <body>
@@ -252,41 +216,31 @@
             </ul>
         </div>
     </nav>
-    <h1 class="title">{{title}}</h1>
-
-    <div class="container">
-        {{#each data.docs}}
-        <div class="user-card">
-            <p>{{this._id}}</p>
-            <h2>{{this.last_name}}, {{this.first_name}}</h2>
-            <p>Email: {{this.email}}</p>
-            <p>Edad: {{this.age}}</p>
-            <p>Rol: {{this.rol}}</p>
-            <p>Última conexión:{{this.last_connection}}</p>
-            <div class="dropdown">
-                <button class="user-options">Opciones</button>
-                <div class="dropdown-content">
-                    <a href="#" class="change-role-btn" data-user-id="{{this._id}}">Cambiar de rol</a>
-                    <a href="#" class="delete-user-btn" data-user-id="{{this._id}}">Eliminar usuario</a>
-                </div>
-            </div>
-        </div>
+    <br>
+    <h1>Mis Compras</h1>
+    <ul class="ul">
+        {{#each tickets}}
+        <li class="li">
+            <p><span class="title">Ticket ID:</span> <span>{{_id}}</span></p>
+            <p><span class="title">Código de compra:</span> <span>{{code}}</span></p>
+            <p><span class="title">Fecha de compra:</span> <span>{{purchase_datetime}}</span></p>
+            <p><span class="title">Monto:</span> <span>${{amount}}</span></p>
+            <p class="toggle-button">Mostrar Productos</p>
+            <ul class="products">
+                {{#each products}}
+                <li>
+                    <p><span class="title">Producto:</span> <span>{{this.title}}</span></p>
+                    <p><span class="title">Precio x unidad:</span> <span>{{this.price}}</span></p>
+                    <p><span class="title">Cantidad:</span> <span>{{this.quantity}}</span></p>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
         {{/each}}
-    </div>
-
-    <nav aria-label="Paginación">
-        <ul class="pagination">
-            {{#if data.hasPrevPage}}
-            <li class="page-item"><a class="page-link" href="/users?page={{data.prevPage}}">Anterior</a></li>
-            {{/if}}
-            {{#if data.hasNextPage}}
-            <li class="page-item"><a class="page-link" href="/users?page={{data.nextPage}}">Siguiente</a></li>
-            {{/if}}
-        </ul>
-    </nav>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </ul>
     <script src="/js/toggle.js"></script>
-    <script src="/js/users.js"></script>
+    <script src="/js/myShopping.js"></script>
+
 </body>
 
 </html>

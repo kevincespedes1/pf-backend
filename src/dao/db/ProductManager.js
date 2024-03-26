@@ -81,7 +81,6 @@ getApiProducts = async (page, limit, category, available, sort) => {
                 owner: newProduct.owner 
             });
             const savedProduct = await product.save();
-            console.log('Producto añadido correctamente')
             return savedProduct;
         } catch (error) {
             throw new Error(`Error adding product: ${error.message}`);

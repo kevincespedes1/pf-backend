@@ -9,7 +9,7 @@ import sessionFileStore from 'session-file-store';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
 import path from 'path';
-import configureSocketIO from './config/socketConfig.js'; 
+import configureSocketIO from './config/socketConfig.js';
 import { productsRouter } from './routes/products.router.js';
 import homeRouter from './routes/home.router.js';
 import realTimeRouter from './routes/realtimeproducts.router.js';
@@ -23,16 +23,16 @@ import { addLogger } from './utils/logger.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 import dotenv from 'dotenv';
-
+import shopRouter from './routes/shop.router.js'
 const app = express();
 const MongoStore = sessionFileStore(session);
 const PORT = process.env.PORT || 8080;
 
-app.use(session({   
+app.use(session({
     secret: 'secret-key1234',
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({ mongooseConnection: mongoose.connection, path: 'sessions' }), 
+    store: new MongoStore({ mongooseConnection: mongoose.connection, path: 'sessions' }),
     cookie: { name: 'sessionId', maxAge: 24 * 60 * 60 * 1000 }
 }));
 
@@ -44,7 +44,7 @@ const swaggerOptions = {
             description: 'Esta documentación cubre toda la API',
         },
     },
-    apis: [ `${__dirname}/docs/**/*.yaml` ],
+    apis: [`${__dirname}/docs/**/*.yaml`],
 };
 
 const specs = swaggerJsdoc(swaggerOptions);
@@ -73,12 +73,13 @@ app.use('/api/carts', cartsRouter)
 app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 app.use('/realtimeproducts', realTimeRouter);
 app.use('/cart', cartRouter)
+app.use('/shopping', shopRouter)
 app.use('/mock', mockRouter);
 app.use('/', homeRouter);
-app.use('/', authRouter); 
+app.use('/', authRouter);
 
 const httpServer = app.listen(PORT, () => {
-        (`Server listening on port ${PORT}`);
+    (`Server listening on port ${PORT}`);
 });
 const io = configureSocketIO(httpServer);
 

@@ -1,10 +1,5 @@
 /* herramientas-------------------------------------------------------------- */
 
-.database-tools-panel1 {
-    position: fixed;
-    width: 300px;
-}
-
 .database-tools-panel {
     position: relative;
     width: 300px;
@@ -198,6 +193,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .pagination-button {

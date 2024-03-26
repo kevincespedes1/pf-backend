@@ -15,10 +15,10 @@ export function validateToken(token) {
         console.log('Correo electrónico:', userEmail);
 
         const expirationTime = decoded.exp;
-        const currentTime = Math.floor(Date.now() / 1000); 
-        const expirationLimit = 60 * 60; 
+        const currentTime = Math.floor(Date.now() / 1000);
+        const expirationLimit = 60 * 60;
         if (expirationTime < currentTime || (expirationTime - currentTime) > expirationLimit) {
-            return false; 
+            return false;
         }
         return true;
     } catch (error) {
